@@ -5,8 +5,9 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('images/*.png', 'images'),
-        ('images/*.ico', 'images'),
+        ('src/ui/images/*.png', 'ui/images'),
+        ('src/ui/images/*.ico', 'ui/images'),
+        ('src/ui/images/*.gif', 'ui/images'),
         ('src/language', 'language'),
         ('src/styles', 'styles'),
         ('src/ui/generated', 'ui/generated')
@@ -42,7 +43,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='images/icon.ico' if os.path.exists('images/icon.ico') else None,
+    icon='src/ui/images/icon.ico',
 )
 coll = COLLECT(
     exe,
