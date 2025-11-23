@@ -2,17 +2,30 @@
 
 a = Analysis(
     ['src/mainApp.py'],
-    pathex=[],
+    pathex=['src'],  # Добавляем src в путь поиска
     binaries=[],
     datas=[
         ('src/ui/images/*.png', 'ui/images'),
-        ('src/ui/images/*.ico', 'ui/images'),
+        ('src/ui/images/*.ico', 'ui/images'), 
         ('src/ui/images/*.gif', 'ui/images'),
         ('src/language', 'language'),
         ('src/styles', 'styles'),
         ('src/ui/generated', 'ui/generated')
     ],
-    hiddenimports=['PyQt5', 'QtAwesome', 'src.ui.generated.resources_rc'],
+    hiddenimports=[
+        'preferences_dialog',
+        'settings_manager', 
+        'file_operations',
+        'src.preferences_dialog',
+        'src.settings_manager',
+        'src.file_operations',
+        'src.styles.mainwindow_style',
+        'src.ui.generated.ui_mainwindow',
+        'src.ui.generated.ui_preferences',
+        'src.ui.generated.resources_rc',
+        'PyQt5',
+        'QtAwesome'
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
