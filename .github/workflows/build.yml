@@ -16,10 +16,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    
+    - name: Explore repository structure
+      run: |
+        echo "Repository structure:"
+        find . -type f -name "*.py" -o -name "*.spec" -o -name "main.py" -o -name "app.py" | head -20
+        echo "---"
+        ls -la
     
     - name: Install system dependencies
       run: |
@@ -42,11 +49,24 @@ jobs:
         pip install pyinstaller
         pip install -r requirements.txt
     
-    - name: Build with PyInstaller
+    - name: Find entry point and build
       run: |
-        pyinstaller marmara-connection.spec
-        # Или если spec файла нет:
-        # pyinstaller --onefile --windowed --name "MarmaraConnector" src/main.py
+        # Поиск главного файла
+        if [ -f "main.py" ]; then
+          ENTRY_POINT="main.py"
+        elif [ -f "src/main.py" ]; then
+          ENTRY_POINT="src/main.py"
+        elif [ -f "app.py" ]; then
+          ENTRY_POINT="app.py"
+        else
+          # Найдем первый подходящий Python файл
+          ENTRY_POINT=$(find . -name "*.py" -type f | grep -v test | head -1)
+        fi
+        
+        echo "Using entry point: $ENTRY_POINT"
+        
+        # Сборка
+        pyinstaller --onefile --windowed --name "MarmaraConnector" "$ENTRY_POINT"
     
     - name: Upload Linux executable
       uses: actions/upload-artifact@v4
@@ -64,10 +84,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    
+    - name: Explore repository structure
+      run: |
+        dir /s /b *.py *.spec main.py app.py
     
     - name: Install Python dependencies
       run: |
@@ -76,48 +100,29 @@ jobs:
         pip install pywin32
         pip install -r requirements.txt
     
-    - name: Build with PyInstaller
+    - name: Find entry point and build
       run: |
-        pyinstaller marmara-connection.spec
-        # Или если spec файла нет:
-        # pyinstaller --onefile --windowed --name "MarmaraConnector" --icon=icon.ico src/main.py
+        # Поиск главного файла на Windows
+        if (Test-Path "main.py") {
+          $ENTRY_POINT = "main.py"
+        } elseif (Test-Path "src\main.py") {
+          $ENTRY_POINT = "src\main.py"
+        } elseif (Test-Path "app.py") {
+          $ENTRY_POINT = "app.py"
+        } else {
+          # Найдем первый подходящий Python файл
+          $ENTRY_POINT = Get-ChildItem -Recurse -Filter "*.py" | Where-Object { $_.Name -notmatch "test" } | Select-Object -First 1
+          $ENTRY_POINT = $ENTRY_POINT.FullName
+        }
+        
+        Write-Host "Using entry point: $ENTRY_POINT"
+        
+        # Сборка
+        pyinstaller --onefile --windowed --name "MarmaraConnector" "$ENTRY_POINT"
     
     - name: Upload Windows executable
       uses: actions/upload-artifact@v4
       with:
         name: marmara-connector-windows
-        path: dist/
-        retention-days: 7
-
-  build_macos:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        python-version: ["3.10"]
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-        pip install -r requirements.txt
-    
-    - name: Build with PyInstaller
-      run: |
-        pyinstaller marmara-connection.spec
-        # Или если spec файла нет:
-        # pyinstaller --onefile --windowed --name "MarmaraConnector" src/main.py
-    
-    - name: Upload macOS executable
-      uses: actions/upload-artifact@v4
-      with:
-        name: marmara-connector-macos
         path: dist/
         retention-days: 7
