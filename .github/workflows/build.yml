@@ -2,9 +2,9 @@ name: Build Marmara Connector with PyInstaller
 
 on:
   push:
-    branches: [ remove-fba ]
+    branches: [ remove-fbs ]
   pull_request:
-    branches: [ remove-fba ]
+    branches: [ remove-fbs ]
 
 jobs:
   build_linux:
