@@ -1,9 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
+
 added_files = [
-         ( '/language/*.*', 'language' ),
-         ( '/images/*.png', 'images' ),
-         ( '/styles/*.qss', 'styles' )
-         ]
+    ('src/language/*.*', 'language'),
+    ('src/images/*.png', 'images'),
+    ('src/styles/*.qss', 'styles')
+]
 
 a = Analysis(
     ['src/mainApp.py'],
@@ -35,7 +36,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['images/icon.ico'],
+    icon=['src/images/icon.ico'],
 )
 coll = COLLECT(
     exe,
